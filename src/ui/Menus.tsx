@@ -5,6 +5,7 @@ import {
   ACHIEVEMENTS, UPGRADE_MAX, type Quality, type UpgradeKey, upgradeCost, useGame,
 } from '../game/store';
 import type { Key } from '../game/i18n';
+import { fmtTime } from '../game/race';
 import { useT } from './useT';
 
 type Panel = null | 'settings' | 'upgrades' | 'inventory' | 'credits';
@@ -166,6 +167,8 @@ function InventoryPanel({ onBack }: { onBack: () => void }) {
       <div className="row"><span>💎 {t('gems')}</span><b>{g.gems}</b></div>
       <div className="row"><span>👊 {t('kills')}</span><b>{g.kills}</b></div>
       <div className="row"><span>🚗 {t('distance')}</span><b>{Math.round(g.distance)} m</b></div>
+      <div className="row"><span>🏁 {t('races')}</span><b>{g.races}</b></div>
+      <div className="row"><span>⏱ {t('bestTime')}</span><b>{g.bestTime > 0 ? fmtTime(g.bestTime) : '-'}</b></div>
       <div className="row col">
         <span>🏆 {t('achievements')}</span>
         <div className="tags">

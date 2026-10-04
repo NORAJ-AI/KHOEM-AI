@@ -1,7 +1,7 @@
 // Global game state (progress, settings, screens) + save/load. Uses zustand.
 
 import { create } from 'zustand';
-import { CHECKPOINTS } from './constants';
+import { CHECKPOINTS, RACE } from './constants';
 import { MISSIONS, missionProgress } from './missions';
 import { applyAudioSettings, sfx } from './audio';
 import { type Lang, type Key, tr } from './i18n';
@@ -37,6 +37,8 @@ interface Progress {
   gems: number;
   kills: number;
   distance: number;
+  races: number;
+  bestTime: number; // seconds, 0 = no race finished yet
   upgrades: Upgrades;
   collected: string[];
   missionIndex: number;
@@ -65,6 +67,7 @@ export const ACHIEVEMENTS: Achievement[] = [
   { id: 'rich', km: 'អ្នកមានកាក់', en: 'Pocket Full of Coins', test: (s) => s.coins >= 50 },
   { id: 'explorer', km: 'អ្នករុករក', en: 'Explorer', test: (s) => s.gems >= 1 },
   { id: 'driver', km: 'អ្នកបើកបរ', en: 'Road Warrior', test: (s) => s.distance >= 500 },
+  { id: 'racer', km: 'អ្នកប្រណាំង', en: 'Racer', test: (s) => s.races >= 1 },
 ];
 
 const SAVE_KEY = 'khoem-ai-save-v1';
@@ -76,7 +79,7 @@ const defaultSettings: Settings = {
 
 function freshProgress(): Progress {
   return {
-    coins: 0, gems: 0, kills: 0, distance: 0,
+    coins: 0, gems: 0, kills: 0, distance: 0, races: 0, bestTime: 0,
     upgrades: { hp: 0, move: 0, carSpeed: 0, carArmor: 0 },
     collected: [], missionIndex: 0, missionActive: false, missionFlag: false,
     checkpoint: 0, tutorial: 0, achievements: [],
@@ -146,6 +149,7 @@ interface GameState extends Progress {
   buyUpgrade: (key: UpgradeKey) => boolean;
   setCheckpoint: (i: number) => void;
   addDistance: (m: number) => void;
+  finishRace: (time: number) => { newBest: boolean; reward: number };
   advanceTutorial: (minStep: number) => void;
   showToast: (text: string) => void;
   say: (text: string) => void;
@@ -336,6 +340,23 @@ export const useGame = create<GameState>((set, get) => ({
     get().checkAchievements();
   },
 
+  finishRace: (time) => {
+    const s = get();
+    const first = s.bestTime <= 0;
+    const newBest = !first && time < s.bestTime;
+    const reward = RACE.reward + (newBest ? RACE.bestBonus : 0);
+    set({
+      coins: s.coins + reward,
+      races: s.races + 1,
+      bestTime: first || newBest ? time : s.bestTime,
+    });
+    sfx('mission');
+    get().showToast(`${get().t('raceDone')} +${reward} 🪙`);
+    get().checkAchievements();
+    get().save();
+    return { newBest, reward };
+  },
+
   advanceTutorial: (minStep) => {
     if (get().tutorial < minStep) set({ tutorial: minStep });
   },
@@ -364,6 +385,7 @@ export const useGame = create<GameState>((set, get) => ({
     const data: SaveData = {
       v: 1,
       coins: s.coins, gems: s.gems, kills: s.kills, distance: s.distance,
+      races: s.races, bestTime: s.bestTime,
       upgrades: s.upgrades, collected: s.collected,
       missionIndex: s.missionIndex, missionActive: s.missionActive, missionFlag: s.missionFlag,
       checkpoint: s.checkpoint, tutorial: s.tutorial, achievements: s.achievements,

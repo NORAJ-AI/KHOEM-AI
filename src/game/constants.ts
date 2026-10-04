@@ -12,7 +12,8 @@ export interface Box {
   roof?: string;
 }
 
-export const WORLD = { minX: -47, maxX: 47, minZ: -44, maxZ: 47 };
+// The map was extended to the east and south to make room for the race track.
+export const WORLD = { minX: -47, maxX: 118, minZ: -44, maxZ: 70 };
 export const ROAD_W = 6;
 export const ROAD_A_Z = 10; // east-west road
 export const ROAD_B_X = 10; // north-south road (crosses the bridge)
@@ -26,6 +27,21 @@ export const CAR_START_YAW = Math.PI;
 export const NPC_POS: V2 = [-23, 19];
 export const TOWN_SQUARE: V2 = [28, 10];
 export const HOME_TARGET: V2 = [-26, 24];
+
+// Race track, east of town. A ring road centred on (cx, cz); you race clockwise (seen from above).
+// The start/finish line is at the north point of the ring.
+export const RACE = {
+  cx: 88,
+  cz: 40,
+  inner: 15, // inner edge of the road
+  outer: 23, // outer edge of the road
+  laneR: 19, // middle of the road
+  laps: 3,
+  startRadius: 9, // how close you must be to the line to begin
+  reward: 30, // coins for finishing
+  bestBonus: 20, // extra coins for beating your best time
+};
+export const RACE_START: V2 = [RACE.cx, RACE.cz - RACE.laneR];
 
 export const BUILDINGS: Box[] = [
   { x: -32, z: 31, w: 9, d: 7, h: 5, color: '#f0c27b', roof: '#c0392b' }, // player home
@@ -57,6 +73,8 @@ export const COINS: V2[] = [
   [-14, 12], [-4, 12], [3, 8], [17, 12], [24, 8], [36, 12],
   [16, -3], [-34, -4], [30, -5], [42, 12], [-10, -5], [-28, 18],
   [10, -22], [6, -38], [18, -22], [27, -37], [-6, -26], [-20, -22],
+  // along the road to the race track (kept at the end so old saves stay valid)
+  [54, 12], [64, 8], [74, 12], [84, 8], [100, 12], [110, 8],
 ];
 
 // Hidden crystals: no marker on the map, the player has to explore.
@@ -64,6 +82,8 @@ export const GEMS: V2[] = [
   [-44, 40],
   [-30, -42],
   [44, -24],
+  [112, 66],
+  [-30, 66],
 ];
 
 export interface Checkpoint {
@@ -135,12 +155,13 @@ function buildTrees(): Tree[] {
   ];
   const out: Tree[] = [];
   let guard = 0;
-  while (out.length < 64 && guard++ < 4000) {
+  while (out.length < 80 && guard++ < 6000) {
     const x = WORLD.minX + 2 + rand() * (WORLD.maxX - WORLD.minX - 4);
     const z = WORLD.minZ + 2 + rand() * (WORLD.maxZ - WORLD.minZ - 4);
     const s = 0.8 + rand() * 0.7;
     if (Math.abs(z - ROAD_A_Z) < ROAD_W / 2 + 3 || Math.abs(x - ROAD_B_X) < ROAD_W / 2 + 3) continue;
     if (isBlockedStatic(x, z, 2.5)) continue;
+    if (Math.hypot(x - RACE.cx, z - RACE.cz) < 31) continue; // keep the race track clear
     if (keep.some(([kx, kz]) => Math.hypot(kx - x, kz - z) < 3)) continue;
     if (out.some((t) => Math.hypot(t.x - x, t.z - z) < 2.5)) continue;
     out.push({ x, z, s });

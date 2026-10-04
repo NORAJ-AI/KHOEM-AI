@@ -14,7 +14,8 @@ function stepVehicle(v: Veh, dt: number): void {
   const maxSpeed = 20 * (1 + 0.12 * st.upgrades.carSpeed);
   let throttle = 0;
   let steer = 0;
-  if (shared.driving) {
+  const locked = shared.race.phase === 'countdown'; // cars wait at the start lights
+  if (shared.driving && !locked) {
     const a = axes();
     throttle = Math.abs(a.y) < 0.1 ? 0 : a.y;
     steer = a.x;
@@ -26,6 +27,7 @@ function stepVehicle(v: Veh, dt: number): void {
   else v.speed -= Math.sign(v.speed) * Math.min(Math.abs(v.speed), (shared.driving ? 5 : 12) * dt);
   if (shared.driving && input.brake) v.speed -= Math.sign(v.speed) * Math.min(Math.abs(v.speed), 34 * dt);
   v.speed = clamp(v.speed, -8, maxSpeed);
+  if (locked) v.speed = 0;
 
   // --- steering (needs speed, like a real car) ---
   v.steer += (steer - v.steer) * Math.min(1, dt * 8);

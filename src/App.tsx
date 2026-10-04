@@ -13,8 +13,6 @@ import { MissionMarker } from './game/MissionMarker';
 import { Npc, TrafficCar } from './game/Npc';
 import { Pickups } from './game/Pickups';
 import { Player } from './game/Player';
-import { RaceInteraction } from './game/RaceInteraction';
-import { RaceCountdown } from './game/RaceCountdown';
 import { Rain } from './game/Rain';
 import { Vehicle } from './game/Vehicle';
 import { World } from './game/World';
@@ -22,6 +20,7 @@ import { initAudio } from './game/audio';
 import { useGame } from './game/store';
 import { HUD } from './ui/HUD';
 import { MainMenu, PauseMenu } from './ui/Menus';
+import { RaceHud } from './ui/RaceHud';
 import { useKeyboard } from './ui/useKeyboard';
 
 const QUALITY = {
@@ -91,8 +90,7 @@ export default function App() {
         <Scene />
       </Canvas>
       {screen === 'playing' && <HUD />}
-      {screen === 'playing' && <RaceInteraction />}
-      {screen === 'playing' && <RaceCountdown active={false} />}
+      {screen === 'playing' && <RaceHud />}
       {screen === 'menu' && <MainMenu />}
       {screen === 'paused' && <PauseMenu />}
     </div>

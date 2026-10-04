@@ -135,8 +135,8 @@ export function ActionButtons() {
   void tutorial;
 
   const interactLabel =
-    snap.nearby === 'npc' ? t('talk') : snap.nearby === 'car' ? t('enter') : snap.nearby === 'exit' ? t('exit') : t('talk');
-  const interactIcon = snap.nearby === 'car' ? '🚗' : snap.nearby === 'exit' ? '🚪' : '💬';
+    snap.nearby === 'race' ? t('raceBtn') : snap.nearby === 'npc' ? t('talk') : snap.nearby === 'car' ? t('enter') : snap.nearby === 'exit' ? t('exit') : t('talk');
+  const interactIcon = snap.nearby === 'race' ? '🏁' : snap.nearby === 'car' ? '🚗' : snap.nearby === 'exit' ? '🚪' : '💬';
 
   return (
     <div className="actions">

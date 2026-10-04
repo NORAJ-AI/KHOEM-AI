@@ -6,7 +6,7 @@ import { useFrame } from '@react-three/fiber';
 import { sfx } from './audio';
 import { CHECKPOINTS, DAY_SECONDS, HOME_SPAWN, PICKUPS, isBlocked } from './constants';
 import { MISSIONS } from './missions';
-import { startRace } from './RaceInteraction';
+import { nearRaceStart, startRace, stepRace } from './race';
 import { input, placeAtCheckpoint, shared } from './shared';
 import { useGame } from './store';
 
@@ -80,7 +80,9 @@ export function GameLogic() {
     const az = shared.driving ? v.z : p.z;
 
     // what can the player interact with right now?
-    if (shared.driving) shared.nearby = 'exit';
+    const racing = shared.race.phase === 'countdown' || shared.race.phase === 'racing';
+    if (!racing && nearRaceStart(ax, az)) shared.nearby = 'race';
+    else if (shared.driving) shared.nearby = 'exit';
     else if (Math.hypot(p.x - v.x, p.z - v.z) < 3.4) shared.nearby = 'car';
     else if (Math.hypot(p.x - shared.npc.x, p.z - shared.npc.z) < 3.2) shared.nearby = 'npc';
     else shared.nearby = 'none';
@@ -90,14 +92,10 @@ export function GameLogic() {
       if (shared.nearby === 'car') enterVehicle();
       else if (shared.nearby === 'exit') exitVehicle();
       else if (shared.nearby === 'npc') talkToNpc();
-      else if (
-        !shared.driving &&
-        Math.hypot(p.x - 35, p.z - 15) <= 8 &&
-        !shared.race.active
-      ) {
-        startRace();
-      }
+      else if (shared.nearby === 'race') startRace();
     }
+
+    stepRace(dt);
 
     // tutorial: first step ends once the player has walked a bit
     if (st.tutorial === 0 && Math.hypot(p.x - HOME_SPAWN[0], p.z - HOME_SPAWN[1]) > 3) st.advanceTutorial(1);

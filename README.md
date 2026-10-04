@@ -40,3 +40,10 @@ checkpoints/respawn · save/load (localStorage) · menus · tutorial · synthesi
 - `ui/` – HUD, Menus, Controls (joystick/buttons), MiniMap
 
 All models, sounds and visuals are generated in code – no copyrighted assets.
+
+## Race track
+
+East of town (follow the road, or the 🏁 flag on the mini-map) there is a ring-road race track.
+Walk or drive to the start gate and tap the 🏁 button: the car is placed on the grid, the lights count
+3-2-1, then race 3 laps. Your time is shown live; finishing pays coins, beating your best time pays a bonus,
+and the best time is saved. Getting out of the car cancels the race.

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import {
-  BRIDGE, BUILDINGS, CHECKPOINTS, RIVER, ROAD_A_Z, ROAD_B_X, ROAD_W, WORLD,
+  BRIDGE, BUILDINGS, CHECKPOINTS, RACE, RACE_START, RIVER, ROAD_A_Z, ROAD_B_X, ROAD_W, WORLD,
 } from '../game/constants';
 import { MISSIONS } from '../game/missions';
 import { shared } from '../game/shared';
@@ -53,6 +53,12 @@ export function MiniMap() {
       g.fillRect(X(ROAD_B_X - ROAD_W / 2), Z(WORLD.minZ), ROAD_W * k, (WORLD.maxZ - WORLD.minZ) * k);
       g.fillStyle = '#8d6e63';
       g.fillRect(X(BRIDGE.x0), Z(RIVER.z0 - 1), (BRIDGE.x1 - BRIDGE.x0) * k, (RIVER.z1 - RIVER.z0 + 2) * k);
+      // race track
+      g.strokeStyle = '#3a3f47';
+      g.lineWidth = (RACE.outer - RACE.inner) * k;
+      g.beginPath();
+      g.arc(X(RACE.cx), Z(RACE.cz), RACE.laneR * k, 0, Math.PI * 2);
+      g.stroke();
       // buildings
       g.fillStyle = '#c9a56a';
       for (const b of BUILDINGS) g.fillRect(X(b.x - b.w / 2), Z(b.z - b.d / 2), b.w * k, b.d * k);
@@ -76,6 +82,23 @@ export function MiniMap() {
       if (!shared.driving) {
         g.fillStyle = '#ff6b6b';
         g.fillRect(X(shared.vehicle.x) - 3, Z(shared.vehicle.z) - 3, 6, 6);
+      }
+      // race start flag (clamped to the edge of the map when far away)
+      {
+        let fx = X(RACE_START[0]);
+        let fz = Z(RACE_START[1]);
+        const fdx = fx - c;
+        const fdz = fz - c;
+        const fd = Math.hypot(fdx, fdz);
+        if (fd > c - 8) {
+          fx = c + (fdx / fd) * (c - 8);
+          fz = c + (fdz / fd) * (c - 8);
+        }
+        g.fillStyle = '#ffffff';
+        g.fillRect(fx - 4, fz - 4, 8, 8);
+        g.fillStyle = '#111111';
+        g.fillRect(fx - 4, fz - 4, 4, 4);
+        g.fillRect(fx, fz, 4, 4);
       }
       // mission target (clamped to the edge if far away)
       const st = useGame.getState();

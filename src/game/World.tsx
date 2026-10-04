@@ -67,12 +67,12 @@ function Ground() {
         <meshLambertMaterial color="#5d9a5a" />
       </mesh>
       {/* south: town + home */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, (WORLD.maxZ + RIVER.z1) / 2]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[(WORLD.minX + WORLD.maxX) / 2, 0, (WORLD.maxZ + RIVER.z1) / 2]} receiveShadow>
         <planeGeometry args={[WORLD.maxX - WORLD.minX + 6, WORLD.maxZ - RIVER.z1 + 3]} />
         <meshLambertMaterial color="#86c97a" />
       </mesh>
       {/* north: wilder area */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, (WORLD.minZ + RIVER.z0) / 2]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[(WORLD.minX + WORLD.maxX) / 2, 0, (WORLD.minZ + RIVER.z0) / 2]} receiveShadow>
         <planeGeometry args={[WORLD.maxX - WORLD.minX + 6, RIVER.z0 - WORLD.minZ + 3]} />
         <meshLambertMaterial color="#6aa86a" />
       </mesh>
@@ -97,7 +97,7 @@ function Roads() {
   const lenB = WORLD.maxZ - WORLD.minZ;
   return (
     <group>
-      <RoadStrip length={lenA} alongX center={[0, ROAD_A_Z]} y={0.02} />
+      <RoadStrip length={lenA} alongX center={[(WORLD.minX + WORLD.maxX) / 2, ROAD_A_Z]} y={0.02} />
       <RoadStrip length={lenB} alongX={false} center={[ROAD_B_X, (WORLD.maxZ + WORLD.minZ) / 2]} y={0.03} />
       {/* parking pad at home */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[CAR_START[0], 0.025, CAR_START[1]]}>
@@ -123,18 +123,19 @@ function Roads() {
 
 function River() {
   const width = WORLD.maxX - WORLD.minX + 8;
+  const cx = (WORLD.minX + WORLD.maxX) / 2;
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.04, (RIVER.z0 + RIVER.z1) / 2]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.04, (RIVER.z0 + RIVER.z1) / 2]}>
         <planeGeometry args={[width, RIVER.z1 - RIVER.z0]} />
         <meshLambertMaterial color="#3fa7d6" transparent opacity={0.9} />
       </mesh>
       {/* sandy banks */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, RIVER.z1 + 0.8]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.01, RIVER.z1 + 0.8]}>
         <planeGeometry args={[width, 1.6]} />
         <meshLambertMaterial color="#e3d5a3" />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, RIVER.z0 - 0.8]}>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[cx, 0.01, RIVER.z0 - 0.8]}>
         <planeGeometry args={[width, 1.6]} />
         <meshLambertMaterial color="#e3d5a3" />
       </mesh>

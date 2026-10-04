@@ -1,7 +1,7 @@
 // Mutable, per-frame game state that must NOT live in React state.
 // React components read/write it inside useFrame; the HUD polls it a few times per second.
 
-import { CAR_START, CAR_START_YAW, CHECKPOINTS, ENEMY_HOMES, HOME_SPAWN, NPC_POS } from './constants';
+import { CAR_START, CAR_START_YAW, CHECKPOINTS, ENEMY_HOMES, HOME_SPAWN, NPC_POS, RACE } from './constants';
 
 export type EnemyState = 'patrol' | 'chase' | 'attack' | 'return' | 'dead';
 
@@ -21,7 +21,8 @@ export interface EnemyRuntime {
   respawnAt: number;
 }
 
-export type Nearby = 'none' | 'npc' | 'car' | 'exit';
+export type Nearby = 'none' | 'npc' | 'car' | 'exit' | 'race';
+export type RacePhase = 'idle' | 'countdown' | 'racing' | 'finished';
 
 export const ENEMY_MAX_HP = 3;
 
@@ -51,9 +52,17 @@ export const shared = {
   hours: 8, // in-game clock, 0..24
   daylight: 1,
   race: {
-    active: false,
-    countdown: '',
-    started: false,
+    phase: 'idle' as RacePhase,
+    countdown: '', // '3' | '2' | '1' | 'GO!' | ''
+    timer: 0, // seconds inside the current phase
+    time: 0, // race time in seconds (starts at GO!)
+    lap: 1,
+    laps: RACE.laps,
+    progress: 0, // radians driven around the ring, 2*PI = one lap
+    lastAngle: 0,
+    resultTimer: 0, // how long the result card stays
+    reward: 0,
+    newBest: false,
   },
 };
 
@@ -94,6 +103,8 @@ export function resetWorld(): void {
   shared.vehicle.steer = 0;
   shared.vehicle.crashCd = 0;
   shared.driving = false;
+  shared.race.phase = 'idle';
+  shared.race.countdown = '';
   shared.enemies = ENEMY_HOMES.map((_, i) => makeEnemy(i));
 }
 
