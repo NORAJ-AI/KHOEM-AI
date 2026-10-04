@@ -50,6 +50,11 @@ export const shared = {
   camPitch: 0.42,
   hours: 8, // in-game clock, 0..24
   daylight: 1,
+  race: {
+    active: false,
+    countdown: '',
+    started: false,
+  },
 };
 
 /** Touch / keyboard input. Triggers (jump, attack, interact) are consumed by the system that handles them. */

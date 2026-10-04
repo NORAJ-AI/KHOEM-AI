@@ -1,0 +1,47 @@
+import { useEffect, useState } from 'react';
+
+export function RaceCountdown({ active = false }: { active?: boolean }) {
+  const [value, setValue] = useState('');
+
+  useEffect(() => {
+    if (!active) {
+      setValue('');
+      return;
+    }
+    const steps = ['3', '2', '1', 'GO!'];
+    let i = 0;
+
+    const timer = window.setInterval(() => {
+      i += 1;
+      if (i >= steps.length) {
+        window.clearInterval(timer);
+        return;
+      }
+      setValue(steps[i]);
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        left: '50%',
+        top: '18%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: 20,
+        pointerEvents: 'none',
+        fontFamily: 'Arial, sans-serif',
+        fontWeight: 900,
+        fontSize: 'clamp(64px, 16vw, 150px)',
+        lineHeight: 1,
+        color: '#ffffff',
+        WebkitTextStroke: '4px #20242a',
+        textShadow: '0 8px 18px rgba(0,0,0,.55)',
+      }}
+    >
+      {value}
+    </div>
+  );
+}

@@ -7,6 +7,8 @@ import {
   BRIDGE, BUILDINGS, GATE, HILLS, RIVER, ROAD_A_Z, ROAD_B_X, ROAD_W, TOWN_SQUARE, TREES, WORLD,
   CAR_START, type Box,
 } from './constants';
+import { RaceTrack } from './RaceTrack';
+import { RaceZone } from './RaceZone';
 
 // ---- shared materials / textures ----
 
@@ -324,6 +326,8 @@ export function World() {
       <Hills />
       <Gate />
       <Clouds />
+      <RaceTrack />
+      <RaceZone />
     </group>
   );
 }

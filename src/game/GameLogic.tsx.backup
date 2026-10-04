@@ -6,7 +6,6 @@ import { useFrame } from '@react-three/fiber';
 import { sfx } from './audio';
 import { CHECKPOINTS, DAY_SECONDS, HOME_SPAWN, PICKUPS, isBlocked } from './constants';
 import { MISSIONS } from './missions';
-import { startRace } from './RaceInteraction';
 import { input, placeAtCheckpoint, shared } from './shared';
 import { useGame } from './store';
 
@@ -90,13 +89,6 @@ export function GameLogic() {
       if (shared.nearby === 'car') enterVehicle();
       else if (shared.nearby === 'exit') exitVehicle();
       else if (shared.nearby === 'npc') talkToNpc();
-      else if (
-        !shared.driving &&
-        Math.hypot(p.x - 35, p.z - 15) <= 8 &&
-        !shared.race.active
-      ) {
-        startRace();
-      }
     }
 
     // tutorial: first step ends once the player has walked a bit

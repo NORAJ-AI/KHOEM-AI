@@ -13,6 +13,8 @@ import { MissionMarker } from './game/MissionMarker';
 import { Npc, TrafficCar } from './game/Npc';
 import { Pickups } from './game/Pickups';
 import { Player } from './game/Player';
+import { RaceInteraction } from './game/RaceInteraction';
+import { RaceCountdown } from './game/RaceCountdown';
 import { Rain } from './game/Rain';
 import { Vehicle } from './game/Vehicle';
 import { World } from './game/World';
@@ -89,6 +91,8 @@ export default function App() {
         <Scene />
       </Canvas>
       {screen === 'playing' && <HUD />}
+      {screen === 'playing' && <RaceInteraction />}
+      {screen === 'playing' && <RaceCountdown active={false} />}
       {screen === 'menu' && <MainMenu />}
       {screen === 'paused' && <PauseMenu />}
     </div>
